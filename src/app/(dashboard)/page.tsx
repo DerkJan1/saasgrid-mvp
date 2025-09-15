@@ -1,5 +1,3 @@
-import { redirect } from 'next/navigation'
-import { createReadOnlyClient } from '@/lib/supabase/server'
 import { KPICards } from '@/components/dashboard/kpi-cards'
 import { RevenueChart } from '@/components/charts/revenue-chart'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -57,16 +55,7 @@ const mockChartData = [
   },
 ]
 
-export default async function HomePage() {
-  const supabase = await createReadOnlyClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) {
-    // User is not logged in, redirect to login
-    redirect('/login')
-  }
-
-  // User is logged in, show the dashboard
+export default function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
