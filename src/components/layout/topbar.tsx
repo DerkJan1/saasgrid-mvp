@@ -59,7 +59,7 @@ export function Topbar({ user }: TopbarProps) {
       {/* Right Section - Actions & User Menu */}
       <div className="flex items-center gap-3">
         {/* Quick Upload Button */}
-        <Link href="/upload">
+        <Link href="/dashboard/upload">
           <Button variant="outline" size="sm" className="hidden sm:flex items-center gap-2">
             <Upload className="h-4 w-4" />
             Upload Data

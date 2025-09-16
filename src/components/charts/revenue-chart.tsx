@@ -1,7 +1,7 @@
 'use client'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { format, parseISO } from 'date-fns'
 
 interface RevenueChartProps {
@@ -82,11 +82,10 @@ export function RevenueChart({ data }: RevenueChartProps) {
                   border: '1px solid #e2e8f0',
                   borderRadius: '8px',
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                }}
-              />
-              <Legend />
-              
-              {/* Stack areas for revenue breakdown */}
+              }}
+            />
+            
+            {/* Stack areas for revenue breakdown */}
               <Area
                 type="monotone"
                 dataKey="newMRR"

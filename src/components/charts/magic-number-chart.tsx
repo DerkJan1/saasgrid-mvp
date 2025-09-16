@@ -16,6 +16,8 @@ interface MagicNumberChartProps {
 }
 
 export function MagicNumberChart({ data }: MagicNumberChartProps) {
+  const CHART_MARGIN = { top: 16, right: 16, bottom: 16, left: 8 };
+  
   const formatMonth = (month: string) => {
     try {
       return format(parseISO(`${month}-01`), 'MMM yy')
@@ -98,12 +100,7 @@ export function MagicNumberChart({ data }: MagicNumberChartProps) {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={chartData.slice(1)} // Skip first month (no previous data)
-              margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
+              margin={CHART_MARGIN}
             >
               <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
               <XAxis 

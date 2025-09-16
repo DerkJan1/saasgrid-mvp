@@ -76,6 +76,16 @@
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.705 0.015 286.067);
+  
+  /* Premium SaaS Colors */
+  --success: oklch(0.6 0.15 145);
+  --success-light: oklch(0.7 0.15 145);
+  --warning: oklch(0.7 0.15 65);
+  --danger: oklch(0.6 0.15 25);
+  --revenue: oklch(0.6 0.15 145);
+  --growth: oklch(0.7 0.15 220);
+  --churn: oklch(0.6 0.15 25);
+  --premium: oklch(0.65 0.15 280);
 }
 
 .dark {
@@ -119,4 +129,55 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@layer utilities {
+  /* Premium Gradients */
+  .bg-gradient-revenue {
+    background: linear-gradient(135deg, oklch(var(--revenue)) 0%, oklch(var(--success-light)) 100%);
+  }
+  
+  .bg-gradient-growth {
+    background: linear-gradient(135deg, oklch(var(--growth)) 0%, oklch(0.8 0.1 220) 100%);
+  }
+  
+  .bg-gradient-churn {
+    background: linear-gradient(135deg, oklch(var(--churn)) 0%, oklch(0.7 0.1 25) 100%);
+  }
+  
+  .bg-gradient-premium {
+    background: linear-gradient(135deg, oklch(var(--premium)) 0%, oklch(0.75 0.1 280) 100%);
+  }
+  
+  /* Enhanced Shadows */
+  .shadow-card {
+    box-shadow: 0 1px 3px oklch(0 0 0 / 0.1), 0 1px 2px oklch(0 0 0 / 0.06);
+  }
+  
+  .shadow-card-hover {
+    box-shadow: 0 4px 6px oklch(0 0 0 / 0.1), 0 2px 4px oklch(0 0 0 / 0.06);
+  }
+  
+  .shadow-premium {
+    box-shadow: 0 10px 15px oklch(0 0 0 / 0.1), 0 4px 6px oklch(0 0 0 / 0.05);
+  }
+  
+  /* Animation utilities */
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-4px); }
+  }
+  
+  /* Premium text colors */
+  .text-revenue { color: oklch(var(--revenue)); }
+  .text-growth { color: oklch(var(--growth)); }
+  .text-churn { color: oklch(var(--churn)); }
+  .text-premium { color: oklch(var(--premium)); }
+  .text-success { color: oklch(var(--success)); }
+  .text-warning { color: oklch(var(--warning)); }
+  .text-danger { color: oklch(var(--danger)); }
 }

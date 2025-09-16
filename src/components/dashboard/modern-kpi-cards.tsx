@@ -134,12 +134,12 @@ export function ModernKPICards({ metrics, previousMetrics }: ModernKPICardsProps
 
               {/* Content */}
               <div className="space-y-2">
-                <h3 className="text-sm font-medium text-gray-600 group-hover:text-gray-900 transition-colors">
+                <h3 className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors">
                   {card.title}
                 </h3>
                 
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-gray-900">
+                  <span className="text-2xl md:text-3xl font-semibold text-gray-900">
                     {card.value}
                   </span>
                   
@@ -158,7 +158,7 @@ export function ModernKPICards({ metrics, previousMetrics }: ModernKPICardsProps
                   )}
                 </div>
                 
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-600">
                   {card.description}
                   {card.change !== null && card.change !== undefined && (
                     <span className="ml-1">• vs last month</span>

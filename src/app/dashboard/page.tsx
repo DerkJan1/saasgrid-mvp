@@ -1,11 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ModernKPICards } from '@/components/dashboard/modern-kpi-cards'
+import { PremiumKPICards } from '@/components/dashboard/premium-kpi-cards'
 import { ARRWaterfallChart } from '@/components/charts/arr-waterfall-chart'
 import { CustomerGrowthChart } from '@/components/charts/customer-growth-chart'
 import { MagicNumberChart } from '@/components/charts/magic-number-chart'
 import { ExpandableChart } from '@/components/charts/expandable-chart'
+import { PremiumChartContainer } from '@/components/charts/premium-chart-container'
 import { SummaryKPITable } from '@/components/dashboard/summary-kpi-table'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -74,7 +75,7 @@ export default function DashboardPage() {
 
           {/* CTA Section */}
           <div className="space-y-6">
-            <Link href="/upload">
+            <Link href="/dashboard/upload">
               <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg h-auto shadow-lg hover:shadow-xl transition-all">
                 <Upload className="h-6 w-6 mr-3" />
                 Upload Your Data
@@ -128,7 +129,7 @@ export default function DashboardPage() {
   const previousMetrics = metrics[metrics.length - 2] // Previous month
 
   return (
-    <div className="space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 isolate">
       {/* Header with Data Summary */}
       <div className="flex justify-between items-start">
         <div>
@@ -140,7 +141,7 @@ export default function DashboardPage() {
         
         {/* Data Management Actions */}
         <div className="flex gap-2">
-          <Link href="/upload">
+          <Link href="/dashboard/upload">
             <Button variant="outline" size="sm" className="flex items-center gap-2">
               <Upload className="h-4 w-4" />
               Upload New Data
@@ -176,9 +177,9 @@ export default function DashboardPage() {
         </Alert>
       )}
 
-      {/* Modern KPI Cards with Real Data */}
+      {/* Premium KPI Cards with Real Data */}
       {currentMetrics && (
-        <ModernKPICards 
+        <PremiumKPICards 
           metrics={{
             mrr: currentMetrics.totalMRR,
             arr: currentMetrics.arr,
@@ -194,49 +195,59 @@ export default function DashboardPage() {
         />
       )}
 
-      {/* Charts with Real Data - Fixed Overlap Layout */}
+      {/* Premium Charts with Real Data - Enhanced Layout */}
       <div className="space-y-8">
-        {/* Main ARR Chart - Full Width */}
-        <div className="w-full">
-          <ExpandableChart 
-            title="ARR Waterfall Analysis"
-            description="Annual Recurring Revenue breakdown showing growth drivers and churn impact"
-          >
-            <div className="h-96 w-full">
-              <ARRWaterfallChart data={metrics} />
-            </div>
-          </ExpandableChart>
-        </div>
+        {/* Main ARR Chart - Premium Container */}
+        <PremiumChartContainer
+          title="ARR Waterfall Analysis"
+          subtitle="Annual Recurring Revenue breakdown showing growth drivers and churn impact"
+          variant="premium"
+          onExpand={() => {/* Handle expand */}}
+          onExport={(format) => {/* Handle export */}}
+        >
+          <div className="h-[420px] w-full">
+            <ARRWaterfallChart data={metrics} />
+          </div>
+        </PremiumChartContainer>
         
-        {/* Side-by-side Analytics - Improved Spacing */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-          <div className="w-full min-h-[400px]">
-            <ExpandableChart 
+        {/* Side-by-side Analytics - Premium Containers */}
+        <div className="grid grid-cols-12 gap-8">
+          <div className="col-span-12 xl:col-span-6">
+            <PremiumChartContainer
               title="Customer Growth"
-              description="Customer acquisition, churn, and net growth over time"
+              subtitle="Customer acquisition, churn, and net growth over time"
+              onExpand={() => {/* Handle expand */}}
+              onExport={(format) => {/* Handle export */}}
             >
-              <div className="h-80 w-full">
+              <div className="h-[420px] w-full">
                 <CustomerGrowthChart data={metrics} />
               </div>
-            </ExpandableChart>
+            </PremiumChartContainer>
           </div>
           
-          <div className="w-full min-h-[400px]">
-            <ExpandableChart 
+          <div className="col-span-12 xl:col-span-6">
+            <PremiumChartContainer
               title="Magic Number"
-              description="Growth efficiency metric - measures new revenue generation relative to churn"
+              subtitle="Growth efficiency metric - measures new revenue generation relative to churn"
+              onExpand={() => {/* Handle expand */}}
+              onExport={(format) => {/* Handle export */}}
             >
-              <div className="h-80 w-full">
+              <div className="h-[420px] w-full">
                 <MagicNumberChart data={metrics} />
               </div>
-            </ExpandableChart>
+            </PremiumChartContainer>
           </div>
         </div>
 
-        {/* Summary KPI Table - Full Width */}
-        <div className="w-full">
+        {/* Summary KPI Table - Enhanced */}
+        <PremiumChartContainer
+          title="Monthly Performance Summary"
+          subtitle="Comprehensive metrics overview for the last 12 months"
+          actions={false}
+          timeSelector={false}
+        >
           <SummaryKPITable data={metrics} />
-        </div>
+        </PremiumChartContainer>
       </div>
     </div>
   )

@@ -1,7 +1,7 @@
 'use client'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { format, parseISO } from 'date-fns'
 import { TrendingUp, Users } from 'lucide-react'
 
@@ -15,6 +15,8 @@ interface CustomerGrowthChartProps {
 }
 
 export function CustomerGrowthChart({ data }: CustomerGrowthChartProps) {
+  const CHART_MARGIN = { top: 16, right: 16, bottom: 16, left: 8 };
+  
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -95,12 +97,7 @@ export function CustomerGrowthChart({ data }: CustomerGrowthChartProps) {
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart
               data={chartData}
-              margin={{
-                top: 20,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
+              margin={CHART_MARGIN}
             >
               <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
               <XAxis 
@@ -139,11 +136,10 @@ export function CustomerGrowthChart({ data }: CustomerGrowthChartProps) {
                   border: '1px solid #e2e8f0',
                   borderRadius: '8px',
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                }}
-              />
-              <Legend />
-              
-              {/* Stacked bars for customer changes */}
+              }}
+            />
+            
+            {/* Stacked bars for customer changes */}
               <Bar
                 yAxisId="customers"
                 dataKey="newCustomers"

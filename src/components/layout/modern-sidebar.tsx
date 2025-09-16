@@ -40,9 +40,9 @@ export function ModernSidebar({ className }: ModernSidebarProps) {
   const navigation = [
     {
       name: 'Overview',
-      href: '/',
+      href: '/dashboard',
       icon: Home,
-      current: pathname === '/',
+      current: pathname === '/dashboard' || pathname === '/',
     },
     {
       name: 'Analytics',
@@ -104,15 +104,15 @@ export function ModernSidebar({ className }: ModernSidebarProps) {
   const tools = [
     {
       name: 'Upload Data',
-      href: '/upload',
+      href: '/dashboard/upload',
       icon: Upload,
-      current: pathname === '/upload',
+      current: pathname === '/dashboard/upload' || pathname === '/upload',
     },
     {
       name: 'Data Sources',
-      href: '/data-sources',
+      href: '/dashboard/data-sources',
       icon: Database,
-      current: pathname === '/data-sources',
+      current: pathname === '/dashboard/data-sources' || pathname === '/data-sources',
     },
   ]
 
