@@ -1,106 +1,197 @@
-import { redirect } from 'next/navigation'
-import { createReadOnlyClient } from '@/lib/supabase/server'
+'use client'
+
+import { useState, useEffect } from 'react'
 import { KPICards } from '@/components/dashboard/kpi-cards'
 import { RevenueChart } from '@/components/charts/revenue-chart'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Upload, TrendingUp } from 'lucide-react'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Upload, TrendingUp, Trash2, FileSpreadsheet, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
+import { DataStore } from '@/lib/data-store'
+import { MonthlyMetrics } from '@/types'
 
-// Mock data for demonstration - in real app this would come from database
-const mockMetrics = {
-  mrr: 125000,
-  arr: 1500000,
-  customerCount: 45,
-  nrr: 1.15,
-  grr: 0.92,
-  churnRate: 0.03,
-}
+export default function HomePage() {
+  const [hasData, setHasData] = useState(false)
+  const [metrics, setMetrics] = useState<MonthlyMetrics[]>([])
+  const [dataSummary, setDataSummary] = useState<any>(null)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
-const mockPreviousMetrics = {
-  mrr: 118000,
-  customerCount: 43,
-}
+  // Load data on component mount
+  useEffect(() => {
+    const loadData = () => {
+      const dataExists = DataStore.hasData()
+      setHasData(dataExists)
+      
+      if (dataExists) {
+        setMetrics(DataStore.getMetrics())
+        setDataSummary(DataStore.getDataSummary())
+      }
+    }
 
-const mockChartData = [
-  {
-    month: '2024-01',
-    totalMRR: 100000,
-    newMRR: 15000,
-    expansionMRR: 8000,
-    contractionMRR: 2000,
-    churnedMRR: 3000,
-  },
-  {
-    month: '2024-02',
-    totalMRR: 108000,
-    newMRR: 12000,
-    expansionMRR: 6000,
-    contractionMRR: 1500,
-    churnedMRR: 2500,
-  },
-  {
-    month: '2024-03',
-    totalMRR: 118000,
-    newMRR: 18000,
-    expansionMRR: 7000,
-    contractionMRR: 2000,
-    churnedMRR: 3000,
-  },
-  {
-    month: '2024-04',
-    totalMRR: 125000,
-    newMRR: 14000,
-    expansionMRR: 9000,
-    contractionMRR: 1800,
-    churnedMRR: 2200,
-  },
-]
+    loadData()
+    
+    // Listen for storage changes (when data is uploaded)
+    const handleStorageChange = () => {
+      loadData()
+    }
 
-export default async function HomePage() {
-  const supabase = await createReadOnlyClient()
-  const { data: { user } } = await supabase.auth.getUser()
+    window.addEventListener('storage', handleStorageChange)
+    return () => window.removeEventListener('storage', handleStorageChange)
+  }, [])
 
-  if (!user) {
-    // User is not logged in, redirect to login
-    redirect('/login')
+  const handleClearData = () => {
+    DataStore.clearData()
+    setHasData(false)
+    setMetrics([])
+    setDataSummary(null)
+    setShowDeleteConfirm(false)
   }
 
-  // User is logged in, show the dashboard
+  // Empty state when no data
+  if (!hasData) {
+    return (
+      <div className="space-y-6">
+        {/* Welcome Section */}
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900">Welcome to SaaSGrid!</h2>
+          <p className="text-gray-600 mt-2">
+            Upload your MRR data to start tracking your SaaS metrics.
+          </p>
+        </div>
+
+        {/* Empty State Card */}
+        <Card className="text-center py-12">
+          <CardContent>
+            <FileSpreadsheet className="mx-auto h-16 w-16 text-gray-400 mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Data Yet</h3>
+            <p className="text-gray-600 mb-6 max-w-md mx-auto">
+              Get started by uploading your MRR data. We support both wide format (customers as rows, months as columns) and long format (one row per customer-month).
+            </p>
+            <Link href="/upload">
+              <Button size="lg" className="flex items-center gap-2 mx-auto">
+                <Upload className="h-5 w-5" />
+                Upload Your First File
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        {/* Features Preview */}
+        <div className="grid gap-6 md:grid-cols-3">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">📊 SaaS Metrics</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">
+                Track MRR, ARR, churn rate, and revenue retention automatically.
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">📈 Growth Analytics</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">
+                Visualize customer growth, expansion, and contraction trends.
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">🔄 Easy Import</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">
+                Upload Excel or CSV files directly from your accounting system.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
+  }
+
+  // Dashboard with real data
+  const currentMetrics = metrics[metrics.length - 1] // Latest month
+  const previousMetrics = metrics[metrics.length - 2] // Previous month
+
   return (
     <div className="space-y-6">
-      {/* Welcome Section */}
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight text-gray-900">Welcome back!</h2>
-        <p className="text-gray-600 mt-2">
-          Here&apos;s an overview of your SaaS metrics performance.
-        </p>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="flex gap-4">
-        <Link href="/upload">
-          <Button className="flex items-center gap-2">
-            <Upload className="h-4 w-4" />
-            Upload New Data
-          </Button>
-        </Link>
-        <Link href="/analytics">
-          <Button variant="outline" className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
-            View Analytics
-          </Button>
-        </Link>
-      </div>
-
-      {/* KPI Cards */}
-      <KPICards metrics={mockMetrics} previousMetrics={mockPreviousMetrics} />
-
-      {/* Charts */}
-      <div className="grid gap-6">
-        <RevenueChart data={mockChartData} />
+      {/* Header with Data Summary */}
+      <div className="flex justify-between items-start">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h2>
+          <p className="text-gray-600 mt-2">
+            {dataSummary && `${dataSummary.uniqueCustomers} customers • ${dataSummary.totalRecords} records • ${dataSummary.dateRange}`}
+          </p>
+        </div>
         
-        {/* Placeholder for additional charts */}
+        {/* Data Management Actions */}
+        <div className="flex gap-2">
+          <Link href="/upload">
+            <Button variant="outline" size="sm" className="flex items-center gap-2">
+              <Upload className="h-4 w-4" />
+              Upload New Data
+            </Button>
+          </Link>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex items-center gap-2 text-red-600 hover:text-red-700"
+            onClick={() => setShowDeleteConfirm(true)}
+          >
+            <Trash2 className="h-4 w-4" />
+            Clear Data
+          </Button>
+        </div>
+      </div>
+
+      {/* Delete Confirmation */}
+      {showDeleteConfirm && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className="flex items-center justify-between">
+            <span>Are you sure? This will permanently delete all your uploaded data.</span>
+            <div className="flex gap-2 ml-4">
+              <Button size="sm" variant="outline" onClick={() => setShowDeleteConfirm(false)}>
+                Cancel
+              </Button>
+              <Button size="sm" variant="destructive" onClick={handleClearData}>
+                Delete All Data
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* KPI Cards with Real Data */}
+      {currentMetrics && (
+        <KPICards 
+          metrics={{
+            mrr: currentMetrics.totalMRR,
+            arr: currentMetrics.arr,
+            customerCount: currentMetrics.customerCount,
+            nrr: currentMetrics.netRevenueRetention,
+            grr: currentMetrics.grossRevenueRetention,
+            churnRate: currentMetrics.logoChurnRate,
+          }} 
+          previousMetrics={previousMetrics ? {
+            mrr: previousMetrics.totalMRR,
+            customerCount: previousMetrics.customerCount,
+          } : undefined}
+        />
+      )}
+
+      {/* Charts with Real Data */}
+      <div className="grid gap-6">
+        <RevenueChart data={metrics} />
+        
+        {/* Additional Charts */}
         <div className="grid gap-6 md:grid-cols-2">
           <Card>
             <CardHeader>
@@ -111,7 +202,7 @@ export default async function HomePage() {
             </CardHeader>
             <CardContent>
               <div className="h-64 flex items-center justify-center text-gray-500">
-                Chart coming soon...
+                Customer growth chart coming soon...
               </div>
             </CardContent>
           </Card>
@@ -125,7 +216,7 @@ export default async function HomePage() {
             </CardHeader>
             <CardContent>
               <div className="h-64 flex items-center justify-center text-gray-500">
-                Chart coming soon...
+                Retention analysis coming soon...
               </div>
             </CardContent>
           </Card>

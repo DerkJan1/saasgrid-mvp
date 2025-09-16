@@ -134,11 +134,13 @@ export function FileUploader({ onUploadComplete, isLoading = false }: FileUpload
 
         {/* File format help */}
         <div className="text-sm text-gray-600 space-y-2">
-          <p className="font-medium">Expected file format:</p>
+          <p className="font-medium">Supported formats:</p>
           <ul className="list-disc list-inside space-y-1 text-xs">
-            <li>Column headers: customerId, customerName, month, mrr</li>
-            <li>Month format: YYYY-MM (e.g., 2024-01) or MM/YYYY</li>
-            <li>MRR values should be numeric (without currency symbols)</li>
+            <li><strong>Long format:</strong> customerId, customerName, month, mrr columns</li>
+            <li><strong>Wide format:</strong> Customer names + month columns (Jan/23, Feb/23, etc.)</li>
+            <li><strong>Month formats:</strong> YYYY-MM, MM/YYYY, Jan/23, Jan-2023, etc.</li>
+            <li><strong>Empty cells:</strong> Automatically handled (represents churn)</li>
+            <li><strong>Values:</strong> Numeric only (no currency symbols)</li>
           </ul>
         </div>
         

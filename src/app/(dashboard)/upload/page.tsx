@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { CheckCircle2, AlertCircle, BarChart3 } from 'lucide-react'
 import { CustomerMonth } from '@/types'
 import { SaaSMetricsCalculator } from '@/lib/calculations/metrics'
+import { DataStore } from '@/lib/data-store'
 import Link from 'next/link'
 
 export default function UploadPage() {
@@ -18,10 +19,28 @@ export default function UploadPage() {
     message: string
     metricsCount?: number
   } | null>(null)
+  const [debugInfo, setDebugInfo] = useState<{
+    totalRecords: number
+    uniqueCustomers: string[]
+    sampleRecords: CustomerMonth[]
+    dateRange: string
+  } | null>(null)
 
   const handleUploadComplete = async (data: CustomerMonth[]) => {
     setUploadedData(data)
     setProcessingResult(null)
+    
+    // Generate debug info for display
+    const uniqueCustomers = [...new Set(data.map(d => d.customerId))]
+    const months = [...new Set(data.map(d => d.month))].sort()
+    const dateRange = months.length > 0 ? `${months[0]} to ${months[months.length - 1]}` : 'No dates'
+    
+    setDebugInfo({
+      totalRecords: data.length,
+      uniqueCustomers,
+      sampleRecords: data.slice(0, 10), // First 10 records
+      dateRange
+    })
   }
 
   const handleProcessData = async () => {
@@ -33,9 +52,14 @@ export default function UploadPage() {
       // Calculate metrics from uploaded data
       const metrics = SaaSMetricsCalculator.calculateMetrics(uploadedData)
       
-      // In a real app, you would save this data to the database here
-      // For now, we'll just simulate the process
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Save data to localStorage for dashboard access
+      DataStore.saveCustomerData(uploadedData)
+      
+      // Trigger storage event for dashboard update
+      window.dispatchEvent(new Event('storage'))
+      
+      // Simulate processing time
+      await new Promise(resolve => setTimeout(resolve, 1000))
       
       setProcessingResult({
         success: true,
@@ -76,13 +100,27 @@ export default function UploadPage() {
         <CardContent>
           <div className="space-y-4">
             <div>
-              <h4 className="font-medium text-gray-900 mb-2">Required Columns:</h4>
-              <ul className="text-sm text-gray-600 space-y-1">
-                <li><strong>customerId:</strong> Unique identifier for each customer</li>
-                <li><strong>customerName:</strong> Display name for the customer</li>
-                <li><strong>month:</strong> Month in YYYY-MM format (e.g., 2024-01)</li>
-                <li><strong>mrr:</strong> Monthly recurring revenue amount (numeric only)</li>
-              </ul>
+              <h4 className="font-medium text-gray-900 mb-2">Supported Data Formats:</h4>
+              <div className="space-y-3">
+                <div>
+                  <p className="font-medium text-sm text-gray-900">Long Format (one row per customer-month):</p>
+                  <ul className="text-xs text-gray-600 space-y-1 ml-4">
+                    <li><strong>customerId:</strong> Unique identifier</li>
+                    <li><strong>customerName:</strong> Display name</li>
+                    <li><strong>month:</strong> YYYY-MM format (e.g., 2024-01)</li>
+                    <li><strong>mrr:</strong> Revenue amount (numeric)</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-medium text-sm text-gray-900">Wide Format (customers as rows, months as columns):</p>
+                  <ul className="text-xs text-gray-600 space-y-1 ml-4">
+                    <li><strong>Customer names</strong> in first column</li>
+                    <li><strong>Month headers:</strong> Jan/23, Feb/23, 2023-01, etc.</li>
+                    <li><strong>Empty cells</strong> represent customer churn</li>
+                    <li><strong>Auto-generates</strong> customer IDs if missing</li>
+                  </ul>
+                </div>
+              </div>
             </div>
             
             <div>
@@ -100,6 +138,68 @@ export default function UploadPage() {
         onUploadComplete={handleUploadComplete}
         isLoading={isProcessing}
       />
+
+      {/* Debug Information */}
+      {debugInfo && (
+        <Card className="border-orange-200 bg-orange-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-orange-800">
+              🔍 Debug Information
+            </CardTitle>
+            <CardDescription>
+              Raw parsing results to help diagnose issues
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="font-medium text-gray-900">Total Records:</span>
+                <p className="text-gray-600">{debugInfo.totalRecords}</p>
+              </div>
+              <div>
+                <span className="font-medium text-gray-900">Unique Customers:</span>
+                <p className="text-gray-600">{debugInfo.uniqueCustomers.length}</p>
+              </div>
+              <div>
+                <span className="font-medium text-gray-900">Date Range:</span>
+                <p className="text-gray-600">{debugInfo.dateRange}</p>
+              </div>
+            </div>
+
+            {/* Customer List */}
+            <div>
+              <span className="font-medium text-gray-900">Customer IDs Found:</span>
+              <div className="mt-1 p-2 bg-white rounded border text-xs">
+                {debugInfo.uniqueCustomers.length > 0 ? (
+                  debugInfo.uniqueCustomers.map((id, index) => (
+                    <span key={index} className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2 mb-1">
+                      {id}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-red-600">No customers found</span>
+                )}
+              </div>
+            </div>
+
+            {/* Sample Records */}
+            <div>
+              <span className="font-medium text-gray-900">Sample Records:</span>
+              <div className="mt-1 p-2 bg-white rounded border text-xs max-h-40 overflow-y-auto">
+                {debugInfo.sampleRecords.length > 0 ? (
+                  debugInfo.sampleRecords.map((record, index) => (
+                    <div key={index} className="mb-1 p-1 border-b border-gray-100">
+                      <strong>{record.customerName}</strong> ({record.customerId}) - {record.month}: ${record.mrr.toLocaleString()}
+                    </div>
+                  ))
+                ) : (
+                  <span className="text-red-600">No records found</span>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Data Preview and Processing */}
       {uploadedData && (
