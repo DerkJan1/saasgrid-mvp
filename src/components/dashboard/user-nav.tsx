@@ -16,7 +16,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
 interface UserNavProps {
-  user: User
+  user: User | null
 }
 
 export function UserNav({ user }: UserNavProps) {
@@ -37,6 +37,14 @@ export function UserNav({ user }: UserNavProps) {
       .join('')
       .toUpperCase()
       .slice(0, 2)
+  }
+
+  if (!user) {
+    return (
+      <Button variant="outline" size="sm" onClick={() => router.push('/login')}>
+        Sign In
+      </Button>
+    )
   }
 
   return (

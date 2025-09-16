@@ -43,9 +43,8 @@ function detectDataFormat(headers: string[]): FormatDetectionResult {
     .map(h => String(h).trim())
     .filter(h => h !== '')
   
-  // Debug logging to help troubleshoot
-  console.log('🔍 DEBUG: Raw headers:', headers)
-  console.log('🔍 DEBUG: Clean headers:', cleanHeaders)
+  // Format detection logging (keep minimal for production)
+  console.log('📊 Detecting format for headers:', cleanHeaders.length, 'columns')
   
   if (cleanHeaders.length < 2) {
     result.warnings.push('Too few columns detected')
@@ -716,8 +715,8 @@ function transformExcelData(data: unknown[][]): CustomerMonth[] {
   console.log('🔍 DEBUG: First 3 rows:', data.slice(0, 3))
   
   // Handle Excel data structure - always start from row 1 (after headers)
-  let headerRow = data[0]
-  let dataStartIndex = 1
+    const headerRow = data[0]
+    const dataStartIndex = 1
   
   console.log(`🔍 DEBUG: Will process ALL rows from ${dataStartIndex} to ${data.length - 1} (${data.length - dataStartIndex} total rows)`)
   
@@ -799,7 +798,7 @@ function transformExcelData(data: unknown[][]): CustomerMonth[] {
   console.log('🔍 DEBUG: Converted to object format - rows:', objectData.length)
   
   // We've directly created CustomerMonth objects, no need for further transformation
-  const result = objectData as CustomerMonth[]
+  const result = objectData as unknown as CustomerMonth[]
   
   console.log(`🔍 DEBUG: Direct processing complete - ${result.length} records created`)
   

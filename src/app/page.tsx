@@ -2,11 +2,15 @@
 
 import { useState, useEffect } from 'react'
 import { KPICards } from '@/components/dashboard/kpi-cards'
-import { RevenueChart } from '@/components/charts/revenue-chart'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { ARRWaterfallChart } from '@/components/charts/arr-waterfall-chart'
+import { CustomerGrowthChart } from '@/components/charts/customer-growth-chart'
+import { MagicNumberChart } from '@/components/charts/magic-number-chart'
+import { ExpandableChart } from '@/components/charts/expandable-chart'
+import { SummaryKPITable } from '@/components/dashboard/summary-kpi-table'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Upload, TrendingUp, Trash2, FileSpreadsheet, AlertCircle } from 'lucide-react'
+import { Upload, Trash2, FileSpreadsheet, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 import { DataStore } from '@/lib/data-store'
 import { MonthlyMetrics } from '@/types'
@@ -14,7 +18,11 @@ import { MonthlyMetrics } from '@/types'
 export default function HomePage() {
   const [hasData, setHasData] = useState(false)
   const [metrics, setMetrics] = useState<MonthlyMetrics[]>([])
-  const [dataSummary, setDataSummary] = useState<any>(null)
+  const [dataSummary, setDataSummary] = useState<{
+    uniqueCustomers: number;
+    totalRecords: number;
+    dateRange: string;
+  } | null>(null)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   // Load data on component mount
@@ -187,39 +195,48 @@ export default function HomePage() {
         />
       )}
 
-      {/* Charts with Real Data */}
-      <div className="grid gap-6">
-        <RevenueChart data={metrics} />
+      {/* Charts with Real Data - SaaSGrid Layout with Better Spacing */}
+      <div className="space-y-8">
+        {/* Main ARR Chart - Full Width */}
+        <div className="w-full">
+          <ExpandableChart 
+            title="ARR Waterfall Analysis"
+            description="Annual Recurring Revenue breakdown showing growth drivers and churn impact"
+          >
+            <div className="h-96 w-full">
+              <ARRWaterfallChart data={metrics} />
+            </div>
+          </ExpandableChart>
+        </div>
         
-        {/* Additional Charts */}
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Customer Growth</CardTitle>
-              <CardDescription>
-                Track your customer acquisition over time
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64 flex items-center justify-center text-gray-500">
-                Customer growth chart coming soon...
+        {/* Side-by-side Analytics - Better Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="w-full">
+            <ExpandableChart 
+              title="Customer Growth"
+              description="Customer acquisition, churn, and net growth over time"
+            >
+              <div className="h-80 w-full">
+                <CustomerGrowthChart data={metrics} />
               </div>
-            </CardContent>
-          </Card>
+            </ExpandableChart>
+          </div>
           
-          <Card>
-            <CardHeader>
-              <CardTitle>Retention Metrics</CardTitle>
-              <CardDescription>
-                Monitor your retention rates and churn
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64 flex items-center justify-center text-gray-500">
-                Retention analysis coming soon...
+          <div className="w-full">
+            <ExpandableChart 
+              title="Magic Number"
+              description="Growth efficiency metric - measures new revenue generation relative to churn"
+            >
+              <div className="h-80 w-full">
+                <MagicNumberChart data={metrics} />
               </div>
-            </CardContent>
-          </Card>
+            </ExpandableChart>
+          </div>
+        </div>
+
+        {/* Summary KPI Table - Full Width */}
+        <div className="w-full">
+          <SummaryKPITable data={metrics} />
         </div>
       </div>
     </div>

@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react'
 import { KPICards } from '@/components/dashboard/kpi-cards'
 import { RevenueChart } from '@/components/charts/revenue-chart'
+import { ARRWaterfallChart } from '@/components/charts/arr-waterfall-chart'
+import { CustomerGrowthChart } from '@/components/charts/customer-growth-chart'
+import { MagicNumberChart } from '@/components/charts/magic-number-chart'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -14,7 +17,11 @@ import { MonthlyMetrics } from '@/types'
 export default function DashboardPage() {
   const [hasData, setHasData] = useState(false)
   const [metrics, setMetrics] = useState<MonthlyMetrics[]>([])
-  const [dataSummary, setDataSummary] = useState<any>(null)
+  const [dataSummary, setDataSummary] = useState<{
+    uniqueCustomers: number;
+    totalRecords: number;
+    dateRange: string;
+  } | null>(null)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   // Load data on component mount
@@ -189,37 +196,12 @@ export default function DashboardPage() {
 
       {/* Charts with Real Data */}
       <div className="grid gap-6">
-        <RevenueChart data={metrics} />
+        <ARRWaterfallChart data={metrics} />
         
         {/* Additional Charts */}
         <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Customer Growth</CardTitle>
-              <CardDescription>
-                Track your customer acquisition over time
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64 flex items-center justify-center text-gray-500">
-                Customer growth chart coming soon...
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Retention Metrics</CardTitle>
-              <CardDescription>
-                Monitor your retention rates and churn
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64 flex items-center justify-center text-gray-500">
-                Retention analysis coming soon...
-              </div>
-            </CardContent>
-          </Card>
+          <CustomerGrowthChart data={metrics} />
+          <MagicNumberChart data={metrics} />
         </div>
       </div>
     </div>
