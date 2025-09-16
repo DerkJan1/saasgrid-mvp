@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { KPICards } from '@/components/dashboard/kpi-cards'
+import { ModernKPICards } from '@/components/dashboard/modern-kpi-cards'
 import { ARRWaterfallChart } from '@/components/charts/arr-waterfall-chart'
 import { CustomerGrowthChart } from '@/components/charts/customer-growth-chart'
 import { MagicNumberChart } from '@/components/charts/magic-number-chart'
@@ -10,7 +10,7 @@ import { SummaryKPITable } from '@/components/dashboard/summary-kpi-table'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Upload, Trash2, FileSpreadsheet, AlertCircle } from 'lucide-react'
+import { Upload, Trash2, FileSpreadsheet, AlertCircle, BarChart3, DollarSign, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 import { DataStore } from '@/lib/data-store'
 import { MonthlyMetrics } from '@/types'
@@ -56,69 +56,68 @@ export default function HomePage() {
     setShowDeleteConfirm(false)
   }
 
-  // Empty state when no data
+  // Empty state when no data - SaaSBoard inspired design
   if (!hasData) {
     return (
-      <div className="space-y-6">
-        {/* Welcome Section */}
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900">Welcome to SaaSGrid!</h2>
-          <p className="text-gray-600 mt-2">
-            Upload your MRR data to start tracking your SaaS metrics.
-          </p>
-        </div>
-
-        {/* Empty State Card */}
-        <Card className="text-center py-12">
-          <CardContent>
-            <FileSpreadsheet className="mx-auto h-16 w-16 text-gray-400 mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Data Yet</h3>
-            <p className="text-gray-600 mb-6 max-w-md mx-auto">
-              Get started by uploading your MRR data. We support both wide format (customers as rows, months as columns) and long format (one row per customer-month).
+      <div className="min-h-[calc(100vh-200px)] flex items-center justify-center">
+        <div className="text-center max-w-2xl mx-auto space-y-8">
+          {/* Hero Section */}
+          <div className="space-y-4">
+            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg">
+              <BarChart3 className="h-10 w-10 text-white" />
+            </div>
+            <h1 className="text-4xl font-bold text-gray-900">Welcome to SaaSGrid</h1>
+            <p className="text-xl text-gray-600 max-w-lg mx-auto">
+              Your comprehensive SaaS analytics platform. Upload your data to unlock powerful insights.
             </p>
+          </div>
+
+          {/* CTA Section */}
+          <div className="space-y-6">
             <Link href="/upload">
-              <Button size="lg" className="flex items-center gap-2 mx-auto">
-                <Upload className="h-5 w-5" />
-                Upload Your First File
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg h-auto shadow-lg hover:shadow-xl transition-all">
+                <Upload className="h-6 w-6 mr-3" />
+                Upload Your Data
               </Button>
             </Link>
-          </CardContent>
-        </Card>
+            
+            <p className="text-sm text-gray-500">
+              Supports CSV, Excel (.xlsx), and legacy Excel (.xls) files
+            </p>
+          </div>
 
-        {/* Features Preview */}
-        <div className="grid gap-6 md:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">📊 SaaS Metrics</CardTitle>
-            </CardHeader>
-            <CardContent>
+          {/* Features Grid */}
+          <div className="grid gap-6 md:grid-cols-3 mt-16">
+            <div className="text-center p-6 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <DollarSign className="h-6 w-6 text-blue-600" />
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-2">Revenue Tracking</h3>
               <p className="text-sm text-gray-600">
-                Track MRR, ARR, churn rate, and revenue retention automatically.
+                Monitor MRR, ARR, and revenue retention metrics automatically
               </p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">📈 Growth Analytics</CardTitle>
-            </CardHeader>
-            <CardContent>
+            </div>
+            
+            <div className="text-center p-6 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <TrendingUp className="h-6 w-6 text-green-600" />
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-2">Growth Analytics</h3>
               <p className="text-sm text-gray-600">
-                Visualize customer growth, expansion, and contraction trends.
+                Visualize customer growth, churn, and expansion trends
               </p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">🔄 Easy Import</CardTitle>
-            </CardHeader>
-            <CardContent>
+            </div>
+            
+            <div className="text-center p-6 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <FileSpreadsheet className="h-6 w-6 text-purple-600" />
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-2">Easy Import</h3>
               <p className="text-sm text-gray-600">
-                Upload Excel or CSV files directly from your accounting system.
+                Upload files from any accounting or CRM system
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -177,9 +176,9 @@ export default function HomePage() {
         </Alert>
       )}
 
-      {/* KPI Cards with Real Data */}
+      {/* Modern KPI Cards with Real Data */}
       {currentMetrics && (
-        <KPICards 
+        <ModernKPICards 
           metrics={{
             mrr: currentMetrics.totalMRR,
             arr: currentMetrics.arr,
